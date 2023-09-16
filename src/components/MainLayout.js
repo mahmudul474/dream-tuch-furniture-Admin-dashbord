@@ -29,9 +29,9 @@ const MainLayout = () => {
     <Layout /* onContextMenu={(e) => e.preventDefault()} */>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo">
-          <h2 className="text-white fs-5 text-center py-3 mb-0">
-            <span className="sm-logo">DC</span>
-            <span className="lg-logo">Dev Corner</span>
+          <h2 className="text-white  fs-5 text-center py-3 mb-0">
+            <span className="sm-logo">Drea</span>
+            <span className="lg-logo">DREAM-TUCH</span>
           </h2>
         </div>
         <Menu

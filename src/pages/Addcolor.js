@@ -43,6 +43,7 @@ const Addcolor = () => {
       toast.success("Color Updated Successfullly!");
       navigate("/admin/list-color");
     }
+    
     if (isError) {
       toast.error("Something Went Wrong!");
     }
