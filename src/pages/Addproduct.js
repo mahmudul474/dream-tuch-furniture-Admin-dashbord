@@ -6,10 +6,14 @@ import { Select, Space } from "antd";
 import "./Addproduct.css";
 import { Option } from "antd/es/mentions";
 import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
+import "./Addproduct.css";
+import axios from "axios";
 
 const Addproduct = () => {
+  const [productType, setProductType] = useState("");
+
   const handleChange = (value) => {
-    console.log(`selected ${value}`);
+    setProductType(value);
   };
   const [price, setPrice] = useState(null);
   const [discountType, setDiscountType] = useState("fixed");
@@ -27,7 +31,6 @@ const Addproduct = () => {
       setDiscountValue(value);
     }
   };
-
   const calculateDiscountedPrice = () => {
     if (discountType === "fixed") {
       return price - discountValue;
@@ -41,9 +44,6 @@ const Addproduct = () => {
   const [form] = Form.useForm();
 
   const [attributes, setAttributes] = useState([{ label: "", values: [] }]);
-
- 
-
   const addAttribute = () => {
     const newAttributes = [...attributes, { label: "", values: [] }];
     setAttributes(newAttributes);
@@ -61,10 +61,154 @@ const Addproduct = () => {
     setAttributes(updatedAttributes);
   };
 
-  const onFinish = (values) => {
-    console.log("Product Details:", values);
-    // You can submit the form data to your backend API here
+  const [selectedCategory, setSelectedCategory] = useState(''); // Initialize with an empty string or any default value
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
   };
+
+  const category = [
+    {
+      _id: 0,
+      title: "All-Door",
+    },
+    {
+      _id: 1,
+      title: "Sofa",
+    },
+    {
+      _id: 2,
+      title: "Center-Table",
+    },
+    {
+      _id: 3,
+      title: "Diven",
+    },
+    {
+      _id: 4,
+      title: "Tv Cabinet",
+    },
+    {
+      _id: 5,
+      title: "Open Shelves",
+    },
+    {
+      _id: 6,
+      title: "Dinning",
+    },
+    {
+      _id: 7,
+      title: "Dinning-Chair",
+    },
+    {
+      _id: 8,
+      title: "Dinner Wagon",
+    },
+    {
+      _id: 9,
+      title: "Bed",
+    },
+    {
+      _id: 10,
+      title: "Dressing Table",
+    },
+    {
+      _id: 11,
+      title: "Wardrope",
+    },
+    {
+      _id: 12,
+      title: "Mattres",
+    },
+    {
+      _id: 13,
+      title: "Chest Of Table",
+    },
+    {
+      _id: 14,
+      title: "Reading Table",
+    },
+    {
+      _id: 15,
+      title: "SmartFit",
+    },
+    {
+      _id: 16,
+      title: "Kitchen",
+    },
+    {
+      _id: 17,
+      title: "Door",
+    },
+    {
+      _id: 18,
+      title: "Executive Table",
+    },
+  ];
+ 
+
+
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [imageUrls, setImageUrls] = useState([]);
+
+
+  
+
+  const onFinish = (values) => {
+
+
+
+  
+    const product = {
+      name: values?.name,
+      category: "",
+      productType: productType,
+      price: values?.price,
+      discount: {
+        type: values.discountType,
+        value: values?.Discountamout,
+      },
+      images: [imageUrls &imageUrls],
+      thumbnail: thumbnailUrl && thumbnailUrl,
+      stock: values.stock,
+      description: values.description,
+      short_description: values.short_description,
+      attributes: [
+        {
+          label: values?.attribute?.label,
+          values: values?.attribute?.values,
+        },
+      ],
+      tags: values.tags,
+      metadata: {
+        title: values?.MetaTitle,
+        description: values?.MetaDescription,
+      },
+    };
+
+ console.log(product)
+
+    // axios.post(process.env.REACT_APP_API_URL,product)
+    // .then(response => {
+    //   // Handle the response data here
+    //   console.log('Response:', response.data);
+    // })
+    // .catch(error => {
+    //   // Handle any errors that occurred during the request
+    //   console.error('Error:', error);
+    // });
+
+
+
+  };
+
+
+
+
+          
+
+
+
 
   return (
     <>
@@ -113,21 +257,62 @@ const Addproduct = () => {
             />
           </div>
         </div>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "30px",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <label
+              style={{
+                fontSize: "18px",
+                fontWeight: "bold",
+                paddingRight: "10px",
+              }}
+            >
+              Category Type
+            </label>
+          </div>
+          <div style={{ width: "50%" }}>
+            {" "}
+            <Select
+        style={{
+          width: '100%',
+        }}
+        placeholder="Select a category"
+        onChange={handleCategoryChange}
+        value={selectedCategory}
+      >
+        {category.map((cat) => (
+          <Option key={cat._id} value={cat.title}>
+            {cat.title}
+          </Option>
+        ))}
+      </Select>
+          </div>
+        </div>
+
         <br></br>
 
         <Form form={form} onFinish={onFinish}>
           <Form.Item
+            label="Product Name"
+            class="label-above-input"
             name="name"
             rules={[
               { required: true, message: "Please enter the product name" },
             ]}
           >
-            <label>Product Name</label>
             <Input placeholder="Example: Door" size="large" />
           </Form.Item>
 
           <Form.Item
-            name="description"
+            label="Sort  Description"
+            class="label-above-input"
+            name="short_description"
             rules={[
               {
                 required: true,
@@ -135,20 +320,23 @@ const Addproduct = () => {
               },
             ]}
           >
-            <label>Description</label>
-            <ReactQuill style={{ height: "150px" }} theme="snow" />
+            <ReactQuill  name="short_description"   style={{ height: "150px" }} theme="snow" />
           </Form.Item>
           <br></br>
           <br></br>
 
-          <Form.Item name="short_description">
-            <label>Short Description</label>
+          <Form.Item
+            class="label-above-input"
+            label="description"
+            name="description"
+          >
             <ReactQuill style={{ height: "150px" }} theme="snow" />
           </Form.Item>
 
           <br />
           <br />
           <Form.Item
+            class="label-above-input"
             label="Stock"
             name="stock"
             rules={[
@@ -159,7 +347,10 @@ const Addproduct = () => {
           </Form.Item>
 
           <Form.Item
-            name="Price"
+            label="Price (৳)"
+            class="label-above-input"
+            type="number"
+            name="price"
             rules={[
               {
                 required: true,
@@ -167,7 +358,6 @@ const Addproduct = () => {
               },
             ]}
           >
-            <lable>Price (৳)</lable>
             <div>
               <input
                 type="number"
@@ -182,17 +372,17 @@ const Addproduct = () => {
           <div style={{ display: "flex" }}>
             <div>
               <Form.Item
+                label="Discount Type"
+                style={{ width: "100%" }}
                 name="discountType"
                 rules={[
                   {
                     required: true,
-                    message: "Please  Select discountType",
+                    message: "Please  enter the price",
                   },
                 ]}
               >
-                <label>Discount Type</label>
                 <Select
-                name="discountType"
                   value={discountType}
                   onChange={(value) => setDiscountType(value)}
                   style={{ width: "100%" }}
@@ -204,20 +394,19 @@ const Addproduct = () => {
             </div>
             <div>
               <Form.Item
-                name="discountValue"
+                label="Amount"
+                name="Discountamout"
                 rules={[
                   {
                     required: true,
-                    message: "Please  enter the price",
+                    message: "Please  enter the  Amount or  Parcents",
                   },
                 ]}
               >
-                <label>Amount</label>
                 <input
-                  name="discountValue"
                   type="number"
                   style={{ width: "100%", padding: "5px" }}
-                  defaultValue={discountValue}
+                  value={discountValue}
                   onChange={(e) =>
                     handleDiscountValueChange(parseFloat(e.target.value))
                   }
@@ -226,7 +415,10 @@ const Addproduct = () => {
             </div>
           </div>
 
-          <ProductImgUpload></ProductImgUpload>
+          <ProductImgUpload
+            setThumbnailUrl={setThumbnailUrl}
+            setImageUrls={setImageUrls}
+          ></ProductImgUpload>
 
           {attributes.map((attribute, index) => (
             <Space key={index} style={{ marginBottom: 8 }}>
@@ -307,40 +499,21 @@ const Addproduct = () => {
           >
             <h6 style={{ textAlign: "center" }}>META DATA</h6>
 
-            <Form.Item name="title">
-              <label>Title</label>
+            <Form.Item label="Meta Title" name="MetaTitle">
               <Input placeholder="Enter the product title" />
             </Form.Item>
 
-            <Form.Item name="description">
-              <label>Description</label>
-              <Input.TextArea
-                style={{
-                  height: "200px",
-                }}
-                placeholder="Enter the product description"
-              />
+            <Form.Item name="MetaDescription" label="Meta Description">
+              <Input.TextArea placeholder="Enter the product description" />
             </Form.Item>
           </div>
 
-          <div
-            style={{
-              margin: "auto ",
-              marginTop: "20px",
-              width: "full",
-              textAlign: "center",
-            }}
-          >
-            <Form.Item>
-              <Button
-                type="primary"
-                style={{ margin: "auto" }}
-                htmlType="submit"
-              >
-                Add Product
-              </Button>
-            </Form.Item>
-          </div>
+          <div style={{ margin: "auto " }}> </div>
+          <Form.Item>
+            <Button type="primary" style={{ margin: "auto" }} htmlType="submit">
+              Add Product
+            </Button>
+          </Form.Item>
         </Form>
       </div>
     </>
