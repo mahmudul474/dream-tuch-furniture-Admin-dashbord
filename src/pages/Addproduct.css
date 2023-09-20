@@ -1,5 +1,4 @@
-.label-above-input {
-    display: block;
-    
-    margin-bottom: 10px; /* Adjust the margin as needed */
-  }
+.label{
+  display: block;
+  text-align: left; /* You can adjust the text alignment as needed */
+}

@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import { Button, Col, Form, Input, InputNumber, Row } from "antd";
+import { Button, Form, Input, InputNumber, Row } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Select, Space } from "antd";
 import "./Addproduct.css";
 import { Option } from "antd/es/mentions";
 import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
-import "./Addproduct.css";
+
 import axios from "axios";
 
 const Addproduct = () => {
-  const [productType, setProductType] = useState("");
-
-  const handleChange = (value) => {
-    setProductType(value);
-  };
+  const [form] = Form.useForm();
   const [price, setPrice] = useState(null);
   const [discountType, setDiscountType] = useState("fixed");
   const [discountValue, setDiscountValue] = useState(null);
+  const [productType, setProductType] = useState("Simple");
+  const handleChange = (value) => {
+    setProductType(value);
+  };
 
   const handlePriceChange = (value) => {
     // Ensure that the value is numeric
@@ -31,17 +31,18 @@ const Addproduct = () => {
       setDiscountValue(value);
     }
   };
-  const calculateDiscountedPrice = () => {
-    if (discountType === "fixed") {
-      return price - discountValue;
-    } else if (discountType === "percentage") {
-      const discountAmount = (price * discountValue) / 100;
-      return price - discountAmount;
-    }
-    return price;
-  };
+  // const calculateDiscountedPrice = () => {
+  //   if (discountType === "fixed") {
+  //     return price - discountValue;
+  //   } else if (discountType === "percentage") {
+  //     const discountAmount = (price * discountValue) / 100;
+  //     return price - discountAmount;
+  //   }
+  //   return price;
+  // };
 
-  const [form] = Form.useForm();
+  const [multipleImageLinks, setMultipleImageLinks] = useState([]);
+  const [singleImageLink, setSingleImageLink] = useState(null);
 
   const [attributes, setAttributes] = useState([{ label: "", values: [] }]);
   const addAttribute = () => {
@@ -61,7 +62,7 @@ const Addproduct = () => {
     setAttributes(updatedAttributes);
   };
 
-  const [selectedCategory, setSelectedCategory] = useState(''); // Initialize with an empty string or any default value
+  const [selectedCategory, setSelectedCategory] = useState("All-Door"); // Initialize with an empty string or any default value
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
@@ -145,40 +146,23 @@ const Addproduct = () => {
       title: "Executive Table",
     },
   ];
- 
-
-
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
-  const [imageUrls, setImageUrls] = useState([]);
-
-
-  
 
   const onFinish = (values) => {
-
-
-
-  
     const product = {
       name: values?.name,
-      category: "",
+      category: selectedCategory,
       productType: productType,
       price: values?.price,
       discount: {
         type: values.discountType,
         value: values?.Discountamout,
       },
-      images: [imageUrls &imageUrls],
-      thumbnail: thumbnailUrl && thumbnailUrl,
+      images: multipleImageLinks,
+      thumbnail: singleImageLink,
       stock: values.stock,
       description: values.description,
       short_description: values.short_description,
-      attributes: [
-        {
-          label: values?.attribute?.label,
-          values: values?.attribute?.values,
-        },
-      ],
+      attributes: values.attributes,
       tags: values.tags,
       metadata: {
         title: values?.MetaTitle,
@@ -186,7 +170,7 @@ const Addproduct = () => {
       },
     };
 
- console.log(product)
+    console.log(product);
 
     // axios.post(process.env.REACT_APP_API_URL,product)
     // .then(response => {
@@ -197,18 +181,7 @@ const Addproduct = () => {
     //   // Handle any errors that occurred during the request
     //   console.error('Error:', error);
     // });
-
-
-
   };
-
-
-
-
-          
-
-
-
 
   return (
     <>
@@ -246,7 +219,7 @@ const Addproduct = () => {
               onChange={handleChange}
               options={[
                 {
-                  value: "simple product",
+                  value: "Simple product",
                   label: "Simple Product",
                 },
                 {
@@ -279,19 +252,19 @@ const Addproduct = () => {
           <div style={{ width: "50%" }}>
             {" "}
             <Select
-        style={{
-          width: '100%',
-        }}
-        placeholder="Select a category"
-        onChange={handleCategoryChange}
-        value={selectedCategory}
-      >
-        {category.map((cat) => (
-          <Option key={cat._id} value={cat.title}>
-            {cat.title}
-          </Option>
-        ))}
-      </Select>
+              style={{
+                width: "100%",
+              }}
+              placeholder="Select a category"
+              onChange={handleCategoryChange}
+              value={selectedCategory}
+            >
+              {category.map((cat) => (
+                <Option key={cat._id} value={cat.title}>
+                  {cat.title}
+                </Option>
+              ))}
+            </Select>
           </div>
         </div>
 
@@ -300,27 +273,35 @@ const Addproduct = () => {
         <Form form={form} onFinish={onFinish}>
           <Form.Item
             label="Product Name"
-            class="label-above-input"
             name="name"
             rules={[
               { required: true, message: "Please enter the product name" },
             ]}
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
           >
             <Input placeholder="Example: Door" size="large" />
           </Form.Item>
 
           <Form.Item
             label="Sort  Description"
-            class="label-above-input"
             name="short_description"
             rules={[
               {
-                required: true,
+               
                 message: "Please enter the product description",
               },
             ]}
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
           >
-            <ReactQuill  name="short_description"   style={{ height: "150px" }} theme="snow" />
+            <ReactQuill
+              name="short_description"
+              style={{ height: "150px" }}
+              theme="snow"
+            />
           </Form.Item>
           <br></br>
           <br></br>
@@ -329,20 +310,25 @@ const Addproduct = () => {
             class="label-above-input"
             label="description"
             name="description"
-          >
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
+         >
             <ReactQuill style={{ height: "150px" }} theme="snow" />
           </Form.Item>
 
           <br />
           <br />
           <Form.Item
-            class="label-above-input"
+            labelAlign="top"
             label="Stock"
             name="stock"
             rules={[
               { required: true, message: "Please enter the stock quantity" },
             ]}
-          >
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
             <InputNumber min={0} />
           </Form.Item>
 
@@ -357,7 +343,9 @@ const Addproduct = () => {
                 message: "Please  enter the price",
               },
             ]}
-          >
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }}  >
             <div>
               <input
                 type="number"
@@ -373,15 +361,18 @@ const Addproduct = () => {
             <div>
               <Form.Item
                 label="Discount Type"
-                style={{ width: "100%" }}
+                class="label-above-input"
+               
                 name="discountType"
                 rules={[
                   {
-                    required: true,
+                    
                     message: "Please  enter the price",
                   },
                 ]}
-              >
+                labelCol={{ span: 24 }} // Span the entire width for the label
+                wrapperCol={{ span: 24 }} // Span the entire width for the input
+                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }}  >
                 <Select
                   value={discountType}
                   onChange={(value) => setDiscountType(value)}
@@ -394,15 +385,18 @@ const Addproduct = () => {
             </div>
             <div>
               <Form.Item
+                class="label-above-input"
                 label="Amount"
                 name="Discountamout"
                 rules={[
                   {
-                    required: true,
+                   
                     message: "Please  enter the  Amount or  Parcents",
                   },
                 ]}
-              >
+                labelCol={{ span: 24 }} // Span the entire width for the label
+                wrapperCol={{ span: 24 }} // Span the entire width for the input
+                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
                 <input
                   type="number"
                   style={{ width: "100%", padding: "5px" }}
@@ -416,8 +410,8 @@ const Addproduct = () => {
           </div>
 
           <ProductImgUpload
-            setThumbnailUrl={setThumbnailUrl}
-            setImageUrls={setImageUrls}
+            setMultipleImageLinks={setMultipleImageLinks}
+            setSingleImageLink={setSingleImageLink}
           ></ProductImgUpload>
 
           {attributes.map((attribute, index) => (
@@ -427,11 +421,13 @@ const Addproduct = () => {
                 name={["attributes", index, "label"]}
                 rules={[
                   {
-                    required: true,
+                 
                     message: "Please enter the attribute label",
                   },
                 ]}
-              >
+                labelCol={{ span: 24 }} // Span the entire width for the label
+                wrapperCol={{ span: 24 }} // Span the entire width for the input
+                style={{marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
                 <Input
                   placeholder="Attribute Label"
                   onChange={(e) => handleLabelChange(index, e.target.value)}
@@ -444,12 +440,14 @@ const Addproduct = () => {
                 label="Attribute Values"
                 rules={[
                   {
-                    required: true,
+                   
                     message: "Please enter at least one attribute value",
                     type: "array",
                   },
                 ]}
-              >
+                labelCol={{ span: 24 }} // Span the entire width for the label
+                wrapperCol={{ span: 24 }} // Span the entire width for the input
+                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"   }} >
                 <Select
                   mode="tags"
                   width="100%"
@@ -470,11 +468,12 @@ const Addproduct = () => {
           </Form.Item>
 
           <Form.Item
+            class="label-above-input"
             label="Tags"
             name="tags"
             rules={[
               {
-                required: true,
+             
                 message: "Please enter at least one tag",
                 type: "array",
               },
@@ -499,11 +498,15 @@ const Addproduct = () => {
           >
             <h6 style={{ textAlign: "center" }}>META DATA</h6>
 
-            <Form.Item label="Meta Title" name="MetaTitle">
+            <Form.Item labelAlign="top" label="Meta Title" name="MetaTitle">
               <Input placeholder="Enter the product title" />
             </Form.Item>
 
-            <Form.Item name="MetaDescription" label="Meta Description">
+            <Form.Item
+              labelAlign="top"
+              name="MetaDescription"
+              label="Meta Description"
+            >
               <Input.TextArea placeholder="Enter the product description" />
             </Form.Item>
           </div>

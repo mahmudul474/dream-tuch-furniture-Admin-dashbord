@@ -1,127 +1,105 @@
-import React, { useState } from 'react';
-import { Form, Upload, Button, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { Form } from "antd";
+import React from "react";
 
-const  ProductImgUpload= ({setThumbnailUrl,setImageUrls}) => {
-  const [fileList1, setFileList1] = useState([]);
-  const [fileList2, setFileList2] = useState([]);
+function ImageUploader({ setMultipleImageLinks, setSingleImageLink }) {
+  const handleMultipleImageUpload = async (e) => {
+    const files = e.target.files;
 
-
-  const customRequest = async ({ file, onSuccess, onError }) => {
-    try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append("image", file);
 
-      const response = await axios.post('https://api.imgbb.com/1/upload', formData, {
-        params: {
-          key: '70fb97e516483d52ddf8b1cd4d5d1698', // Replace with your ImgBB API key
-        },
-      });
+      try {
+        const response = await fetch(
+          "https://api.imgbb.com/1/upload?key=70fb97e516483d52ddf8b1cd4d5d1698",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
-      if (response.data.status === 200) {
-        const imageUrl = response.data.data.url;
-        if (fileList1.includes(file)) {
-          setThumbnailUrl(imageUrl);
-        } else if (fileList2.includes(file)) {
-          setImageUrls((prevImageUrls) => [...prevImageUrls, imageUrl]);
+        if (response.ok) {
+          const data = await response.json();
+          setMultipleImageLinks((prevLinks) => [...prevLinks, data.data.url]);
+        } else {
+          console.error("Failed to upload image");
         }
-        console.log('Image uploaded successfully. URL:', imageUrl);
-        onSuccess(response, file);
+      } catch (error) {
+        console.error("Error uploading image", error);
+      }
+    }
+  };
+
+  const handleSingleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch(
+        "https://api.imgbb.com/1/upload?key=70fb97e516483d52ddf8b1cd4d5d1698",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setSingleImageLink(data.data.url);
       } else {
-        message.error('Image upload failed');
-        onError(response);
+        console.error("Failed to upload image");
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
-      onError(error);
+      console.error("Error uploading image", error);
     }
   };
-
-  const beforeUpload = (file) => {
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      message.error('You can only upload image files!');
-    }
-    return isImage;
-  };
-
-  const handleChange1 = ({ fileList }) => {
-    setFileList1(fileList);
-  };
-
-  const handleRemove1 = (file) => {
-    const newFileList = fileList1.filter((item) => item.uid !== file.uid);
-    setFileList1(newFileList);
-  };
-
-  const handleChange2 = ({ fileList }) => {
-    setFileList2(fileList);
-  };
-
-  const handleRemove2 = (file) => {
-    const newFileList = fileList2.filter((item) => item.uid !== file.uid);
-    setFileList2(newFileList);
-  };
-
-  
 
   return (
-    <>
-      <Form.Item
-        label="Upload Thumbnail"
-        name="Thumbnail"
+    <div style={{marginBottom:"10px", marginTop:"10px"}}>
+ <Form.Item
+        name="Thumnils "
+        label="Upload  Thumnil"
         rules={[
           {
             required: true,
-            message: 'Please upload a thumbnail',
+            message: "Please Upload Thumnil",
+
           },
         ]}
+        labelCol={{ span: 24 }} // Span the entire width for the label
+        wrapperCol={{ span: 24 }} // Span the entire width for the input
+        style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
       >
-        <Upload
-          customRequest={customRequest}
-          fileList={fileList1}
-          onChange={handleChange1}
-          beforeUpload={beforeUpload}
-          onRemove={handleRemove1}
-          maxCount={10}
-          accept="image/*"
-        >
-          <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
-        </Upload>
+        <input type="file" onChange={handleSingleImageUpload} />
       </Form.Item>
 
       <Form.Item
-        label="Upload Images"
         name="images"
+        label="Images"
         rules={[
           {
             required: true,
-            message: 'Please upload images',
+            message: "Please  upload images ",
+            
           },
         ]}
+        labelCol={{ span: 24 }} // Span the entire width for the label
+        wrapperCol={{ span: 24 }} // Span the entire width for the input
+        style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
       >
-        <Upload
-          customRequest={customRequest}
-          fileList={fileList2}
-          onChange={handleChange2}
-          beforeUpload={beforeUpload}
-          onRemove={handleRemove2}
+        <input
+          className="bg-red-400"
+          type="file"
           multiple
-          maxCount={20}
-          accept="image/*"
-        >
-          <Button icon={<UploadOutlined />}>Upload Images</Button>
-        </Upload>
+          onChange={handleMultipleImageUpload}
+        />
       </Form.Item>
 
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
-    </>
+     
+    </div>
   );
-};
+}
 
-export default ProductImgUpload;
+export default ImageUploader;
