@@ -170,17 +170,17 @@ const Addproduct = () => {
       },
     };
 
-    console.log(product);
+    
 
-    // axios.post(process.env.REACT_APP_API_URL,product)
-    // .then(response => {
-    //   // Handle the response data here
-    //   console.log('Response:', response.data);
-    // })
-    // .catch(error => {
-    //   // Handle any errors that occurred during the request
-    //   console.error('Error:', error);
-    // });
+    axios.post(`http://192.46.208.21:5000/api/v1/Product`,product)
+    .then(response => {
+      // Handle the response data here
+      console.log('Response:', response.data);
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the request
+      console.error('Error:', error);
+    });
   };
 
   return (
