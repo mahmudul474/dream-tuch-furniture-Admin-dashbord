@@ -513,7 +513,7 @@ const Addproduct = () => {
 
           <div style={{ margin: "auto " }}> </div>
           <Form.Item>
-            <Button type="primary" style={{ margin: "auto" }} htmlType="submit">
+            <Button    style={{ margin: "auto", width:"120px"    ,    border:"1px solid  green"  ,background:""  }} htmlType="submit">
               Add Product
             </Button>
           </Form.Item>
