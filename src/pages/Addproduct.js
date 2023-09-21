@@ -8,23 +8,21 @@ import { Option } from "antd/es/mentions";
 import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
 
 import axios from "axios";
+import Variyetions from "../components/VariyableProduct/Variyetions";
 
 const Addproduct = () => {
   const [form] = Form.useForm();
-  const [price, setPrice] = useState(null);
   const [discountType, setDiscountType] = useState("fixed");
   const [discountValue, setDiscountValue] = useState(null);
-  const [productType, setProductType] = useState("Simple");
+  const [productType, setProductType] = useState("simple_product");
   const handleChange = (value) => {
     setProductType(value);
+    setShowAdditionalFields(value === 'variable_product');
   };
 
-  const handlePriceChange = (value) => {
-    // Ensure that the value is numeric
-    if (!isNaN(value)) {
-      setPrice(value);
-    }
-  };
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false)
+
+   
 
   const handleDiscountValueChange = (value) => {
     if (!isNaN(value)) {
@@ -170,9 +168,14 @@ const Addproduct = () => {
       },
     };
 
+
+
+
+
+  console.log(product)
     
 
-    axios.post(`http://192.46.208.21:5000/api/v1/Product`,product)
+    axios.post(`https://site-api.trelyt.store/api/v1/products`,product)
     .then(response => {
       // Handle the response data here
       console.log('Response:', response.data);
@@ -219,11 +222,11 @@ const Addproduct = () => {
               onChange={handleChange}
               options={[
                 {
-                  value: "Simple product",
+                  value: "simple_product",
                   label: "Simple Product",
                 },
                 {
-                  value: "Variable Product",
+                  value: "variable_product",
                   label: "Variable Product",
                 },
               ]}
@@ -334,8 +337,8 @@ const Addproduct = () => {
 
           <Form.Item
             label="Price (৳)"
-            class="label-above-input"
-            type="number"
+          
+            
             name="price"
             rules={[
               {
@@ -346,15 +349,9 @@ const Addproduct = () => {
             labelCol={{ span: 24 }} // Span the entire width for the label
             wrapperCol={{ span: 24 }} // Span the entire width for the input
             style={{marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }}  >
-            <div>
-              <input
-                type="number"
-                placeholder={`Example: 10000  `}
-                style={{ width: "30%", padding: "5px" }}
-                defaultValue={price}
-                onChange={(e) => handlePriceChange(parseFloat(e.target.value))}
-              />
-            </div>
+            
+
+            <Input placeholder="Example : 2000"  />
           </Form.Item>
 
           <div style={{ display: "flex" }}>
@@ -390,21 +387,15 @@ const Addproduct = () => {
                 name="Discountamout"
                 rules={[
                   {
-                   
+                   type:Number,
                     message: "Please  enter the  Amount or  Parcents",
                   },
                 ]}
                 labelCol={{ span: 24 }} // Span the entire width for the label
                 wrapperCol={{ span: 24 }} // Span the entire width for the input
                 style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
-                <input
-                  type="number"
-                  style={{ width: "100%", padding: "5px" }}
-                  value={discountValue}
-                  onChange={(e) =>
-                    handleDiscountValueChange(parseFloat(e.target.value))
-                  }
-                />
+                
+                <InputNumber min={0}/>
               </Form.Item>
             </div>
           </div>
@@ -510,6 +501,8 @@ const Addproduct = () => {
               <Input.TextArea placeholder="Enter the product description" />
             </Form.Item>
           </div>
+
+          {showAdditionalFields && <Variyetions></Variyetions>}
 
           <div style={{ margin: "auto " }}> </div>
           <Form.Item>
