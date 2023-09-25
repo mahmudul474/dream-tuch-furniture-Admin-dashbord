@@ -1,4 +1,4 @@
-import { Form } from "antd";
+import { Col, Form, Row } from "antd";
 import React from "react";
 
 function ImageUploader({ setMultipleImageLinks, setSingleImageLink }) {
@@ -57,48 +57,47 @@ function ImageUploader({ setMultipleImageLinks, setSingleImageLink }) {
   };
 
   return (
-    <div style={{marginBottom:"10px", marginTop:"10px"}}>
- <Form.Item
-        name="Thumnils "
-        label="Upload  Thumnil"
-        rules={[
-          {
-            required: true,
-            message: "Please Upload Thumnil",
-
-          },
-        ]}
-        labelCol={{ span: 24 }} // Span the entire width for the label
-        wrapperCol={{ span: 24 }} // Span the entire width for the input
-        style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
-      >
-        <input type="file" onChange={handleSingleImageUpload} />
-      </Form.Item>
-
-      <Form.Item
-        name="images"
-        label="Images"
-        rules={[
-          {
-            required: true,
-            message: "Please  upload images ",
-            
-          },
-        ]}
-        labelCol={{ span: 24 }} // Span the entire width for the label
-        wrapperCol={{ span: 24 }} // Span the entire width for the input
-        style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
-      >
-        <input
-          className="bg-red-400"
-          type="file"
-          multiple
-          onChange={handleMultipleImageUpload}
-        />
-      </Form.Item>
-
-     
-    </div>
+    <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item
+          name="Thumnils "
+          label="Upload  Thumnil"
+          rules={[
+            {
+              required: true,
+              message: "Please Upload Thumnil",
+            },
+          ]}
+          labelCol={{ span: 24 }} // Span the entire width for the label
+          wrapperCol={{ span: 24 }} // Span the entire width for the input
+          style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
+        >
+          <input type="file" onChange={handleSingleImageUpload} />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item
+          name="images"
+          label="Images"
+          rules={[
+            {
+              required: true,
+              message: "Please  upload images ",
+            },
+          ]}
+          labelCol={{ span: 24 }} // Span the entire width for the label
+          wrapperCol={{ span: 24 }} // Span the entire width for the input
+          style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
+        >
+          <input
+            className="bg-red-400"
+            type="file"
+            multiple
+            onChange={handleMultipleImageUpload}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 }
 

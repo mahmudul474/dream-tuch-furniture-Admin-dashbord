@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Button, Form, Input, InputNumber, Row } from "antd";
+import { Button, Col, Form, Input, InputNumber, Row } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Select, Space } from "antd";
 import "./Addproduct.css";
+import { CloseOutlined } from "@ant-design/icons";
+
 import { Option } from "antd/es/mentions";
 import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
 
@@ -17,12 +19,10 @@ const Addproduct = () => {
   const [productType, setProductType] = useState("simple_product");
   const handleChange = (value) => {
     setProductType(value);
-    setShowAdditionalFields(value === 'variable_product');
+    setShowAdditionalFields(value === "variable_product");
   };
 
-  const [showAdditionalFields, setShowAdditionalFields] = useState(false)
-
-   
+  const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   const handleDiscountValueChange = (value) => {
     if (!isNaN(value)) {
@@ -41,11 +41,19 @@ const Addproduct = () => {
 
   const [multipleImageLinks, setMultipleImageLinks] = useState([]);
   const [singleImageLink, setSingleImageLink] = useState(null);
+  const [variyationImageLink, setVariyationImageLink] = useState(null);
 
   const [attributes, setAttributes] = useState([{ label: "", values: [] }]);
   const addAttribute = () => {
     const newAttributes = [...attributes, { label: "", values: [] }];
     setAttributes(newAttributes);
+  };
+
+  const removeAttribute = (indexToRemove) => {
+    // Implement your remove attribute logic here
+    const updatedAttributes = [...attributes];
+    updatedAttributes.splice(indexToRemove, 1);
+    setAttributes(updatedAttributes);
   };
 
   const handleLabelChange = (index, value) => {
@@ -146,6 +154,17 @@ const Addproduct = () => {
   ];
 
   const onFinish = (values) => {
+    // let variableProducts = [];
+    // const variyetionfo = values?.variyations.map((variyable) => {
+    //   const product = {
+    //     price: variyable.price,
+    //     stock: variyable.stock,
+    //     attributes: variyable.attributes,
+    //     image: variyationImageLink,
+    //   };
+    //   variableProducts.push(product);
+    // });
+
     const product = {
       name: values?.name,
       category: selectedCategory,
@@ -166,24 +185,20 @@ const Addproduct = () => {
         title: values?.MetaTitle,
         description: values?.MetaDescription,
       },
+      variableProducts:
+        productType === "variable_product" ? values?.variyations : [],
     };
 
-
-
-
-
-  console.log(product)
-    
-
-    axios.post(`https://site-api.trelyt.store/api/v1/products`,product)
-    .then(response => {
-      // Handle the response data here
-      console.log('Response:', response.data);
-    })
-    .catch(error => {
-      // Handle any errors that occurred during the request
-      console.error('Error:', error);
-    });
+    axios
+      .post(`https://site-api.trelyt.store/api/v1/products`, product)
+      .then((response) => {
+        // Handle the response data here
+        console.log("Response:", response.data);
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -205,7 +220,7 @@ const Addproduct = () => {
             <label
               style={{
                 fontSize: "18px",
-                fontWeight: "bold",
+                fontWeight: "500",
                 paddingRight: "10px",
               }}
             >
@@ -245,7 +260,7 @@ const Addproduct = () => {
             <label
               style={{
                 fontSize: "18px",
-                fontWeight: "bold",
+                fontWeight: "500",
                 paddingRight: "10px",
               }}
             >
@@ -282,7 +297,11 @@ const Addproduct = () => {
             ]}
             labelCol={{ span: 24 }} // Span the entire width for the label
             wrapperCol={{ span: 24 }} // Span the entire width for the input
-            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
+            style={{
+              marginBottom: "2px",
+             
+              fontWeight: "500",
+            }}
           >
             <Input placeholder="Example: Door" size="large" />
           </Form.Item>
@@ -292,13 +311,16 @@ const Addproduct = () => {
             name="short_description"
             rules={[
               {
-               
                 message: "Please enter the product description",
               },
             ]}
             labelCol={{ span: 24 }} // Span the entire width for the label
             wrapperCol={{ span: 24 }} // Span the entire width for the input
-            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
+            style={{
+              marginBottom: "2px",
+             
+              fontWeight: "500",
+            }}
           >
             <ReactQuill
               name="short_description"
@@ -313,69 +335,106 @@ const Addproduct = () => {
             class="label-above-input"
             label="description"
             name="description"
-            labelCol={{ span: 24 }} // Span the entire width for the label
-            wrapperCol={{ span: 24 }} // Span the entire width for the input
-            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold" }}
-         >
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            style={{
+              marginBottom: "2px",
+             
+              fontWeight: "500",
+            }}
+          >
             <ReactQuill style={{ height: "150px" }} theme="snow" />
           </Form.Item>
 
           <br />
           <br />
-          <Form.Item
-            labelAlign="top"
-            label="Stock"
-            name="stock"
-            rules={[
-              { required: true, message: "Please enter the stock quantity" },
-            ]}
-            labelCol={{ span: 24 }} // Span the entire width for the label
-            wrapperCol={{ span: 24 }} // Span the entire width for the input
-            style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
-            <InputNumber min={0} />
-          </Form.Item>
 
-          <Form.Item
-            label="Price (৳)"
-          
-            
-            name="price"
-            rules={[
-              {
-                required: true,
-                message: "Please  enter the price",
-              },
-            ]}
-            labelCol={{ span: 24 }} // Span the entire width for the label
-            wrapperCol={{ span: 24 }} // Span the entire width for the input
-            style={{marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }}  >
-            
-
-            <Input placeholder="Example : 2000"  />
-          </Form.Item>
+          <Row style={{ margin: "20px 0px" }} gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                labelAlign="top"
+                label="Price (৳)"
+                name="price"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the price",
+                  },
+                ]}
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                style={{
+                 
+                  fontWeight: "500",
+                }}
+              >
+                <Input className="inputfield" placeholder="Example: 2000" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                labelAlign="top"
+                label="Stock"
+                name="stock"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the stock quantity",
+                  },
+                ]}
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                style={{
+                 
+                  fontWeight: "500",
+                }}
+              >
+                <InputNumber
+                  placeholder="Example: 20"
+                  style={{
+                    padding: "8px  4px",
+                    width: "100%",
+                    border: "1px solid black ",
+                  }}
+                  min={0}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
           <div style={{ display: "flex" }}>
             <div>
               <Form.Item
                 label="Discount Type"
                 class="label-above-input"
-               
                 name="discountType"
                 rules={[
                   {
-                    
                     message: "Please  enter the price",
                   },
                 ]}
                 labelCol={{ span: 24 }} // Span the entire width for the label
                 wrapperCol={{ span: 24 }} // Span the entire width for the input
-                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }}  >
+                style={{
+                  marginBottom: "2px",
+                 
+                  fontWeight: "500",
+                }}
+              
+              
+              
+              >
                 <Select
+
+                
                   value={discountType}
                   onChange={(value) => setDiscountType(value)}
-                  style={{ width: "100%" }}
+                  style={{border: "2px  solid black ", width:"full" ,   }}
+                
+                
+                
                 >
-                  <Option value="fixed">Fixed Amount</Option>
+                  <Option     value="fixed">Fixed Amount</Option>
                   <Option value="percentage">Percentage</Option>
                 </Select>
               </Form.Item>
@@ -387,23 +446,30 @@ const Addproduct = () => {
                 name="Discountamout"
                 rules={[
                   {
-                   type:Number,
+                    type: Number,
                     message: "Please  enter the  Amount or  Parcents",
                   },
                 ]}
                 labelCol={{ span: 24 }} // Span the entire width for the label
                 wrapperCol={{ span: 24 }} // Span the entire width for the input
-                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
-                
-                <InputNumber min={0}/>
+                style={{
+                  marginBottom: "2px",
+                 
+                  fontWeight: "500",
+                }}
+              >
+                <InputNumber  placeholder="Example: 23"   style={{  padding:"3px" , margin:"0px 10px" ,width:"100%", border:"2px solid black "}}   min={0} />
               </Form.Item>
             </div>
           </div>
-
+<div  style={{ margin:"10px 0px " , border:"1px solid black",  padding:"20px 10px ", borderRadius:"10px" }}>
+  <h4  style={{margin:"10px auto ", textAlign:"center"}}>Image Upload </h4>
           <ProductImgUpload
             setMultipleImageLinks={setMultipleImageLinks}
             setSingleImageLink={setSingleImageLink}
           ></ProductImgUpload>
+
+</div>
 
           {attributes.map((attribute, index) => (
             <Space key={index} style={{ marginBottom: 8 }}>
@@ -412,13 +478,17 @@ const Addproduct = () => {
                 name={["attributes", index, "label"]}
                 rules={[
                   {
-                 
                     message: "Please enter the attribute label",
                   },
                 ]}
-                labelCol={{ span: 24 }} // Span the entire width for the label
-                wrapperCol={{ span: 24 }} // Span the entire width for the input
-                style={{marginBottom: "2px",fontSize: "20px", fontWeight:"bold"  }} >
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                style={{
+                  marginBottom: "2px",
+                 
+                  fontWeight: "500",
+                }}
+              >
                 <Input
                   placeholder="Attribute Label"
                   onChange={(e) => handleLabelChange(index, e.target.value)}
@@ -431,14 +501,18 @@ const Addproduct = () => {
                 label="Attribute Values"
                 rules={[
                   {
-                   
                     message: "Please enter at least one attribute value",
                     type: "array",
                   },
                 ]}
-                labelCol={{ span: 24 }} // Span the entire width for the label
-                wrapperCol={{ span: 24 }} // Span the entire width for the input
-                style={{ marginBottom: "2px",fontSize: "20px", fontWeight:"bold"   }} >
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                style={{
+                  marginBottom: "2px",
+                 
+                  fontWeight: "500",
+                }}
+              >
                 <Select
                   mode="tags"
                   width="100%"
@@ -447,6 +521,18 @@ const Addproduct = () => {
                   onChange={(values) => handleValuesChange(index, values)}
                   value={attribute.values}
                 />
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{ span: 24 }}
+                style={{ textAlign: "right" }} // Align the button to the right
+              >
+                <span
+                  onClick={() => removeAttribute(index)}
+                  style={{ cursor: "pointer", color: "red" }}
+                >
+                  <CloseOutlined />
+                </span>
               </Form.Item>
             </Space>
           ))}
@@ -464,11 +550,17 @@ const Addproduct = () => {
             name="tags"
             rules={[
               {
-             
                 message: "Please enter at least one tag",
                 type: "array",
               },
             ]}
+            labelCol={{ span: 24 }} // Span the entire width for the label
+            wrapperCol={{ span: 24 }} // Span the entire width for the input
+            style={{
+              marginBottom: "2px",
+             
+              fontWeight: "500",
+            }}
           >
             <Select
               mode="tags"
@@ -489,7 +581,18 @@ const Addproduct = () => {
           >
             <h6 style={{ textAlign: "center" }}>META DATA</h6>
 
-            <Form.Item labelAlign="top" label="Meta Title" name="MetaTitle">
+            <Form.Item
+              labelAlign="top"
+              label="Meta Title"
+              name="MetaTitle"
+              labelCol={{ span: 24 }} // Span the entire width for the label
+              wrapperCol={{ span: 24 }} // Span the entire width for the input
+              style={{
+                marginBottom: "2px",
+               
+                fontWeight: "500",
+              }}
+            >
               <Input placeholder="Enter the product title" />
             </Form.Item>
 
@@ -497,16 +600,35 @@ const Addproduct = () => {
               labelAlign="top"
               name="MetaDescription"
               label="Meta Description"
+              labelCol={{ span: 24 }} // Span the entire width for the label
+              wrapperCol={{ span: 24 }} // Span the entire width for the input
+              style={{
+                marginBottom: "2px",
+               
+                fontWeight: "500",
+              }}
             >
               <Input.TextArea placeholder="Enter the product description" />
             </Form.Item>
           </div>
 
-          {showAdditionalFields && <Variyetions></Variyetions>}
+          {showAdditionalFields && (
+            <Variyetions
+              setVariyationImageLink={setVariyationImageLink}
+            ></Variyetions>
+          )}
 
           <div style={{ margin: "auto " }}> </div>
           <Form.Item>
-            <Button    style={{ margin: "auto", width:"120px"    ,    border:"1px solid  green"  ,background:""  }} htmlType="submit">
+            <Button
+              style={{
+                margin: "auto",
+                width: "120px",
+                border: "1px solid  green",
+                background: "",
+              }}
+              htmlType="submit"
+            >
               Add Product
             </Button>
           </Form.Item>
