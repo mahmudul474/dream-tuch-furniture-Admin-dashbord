@@ -49,6 +49,9 @@ const Addproduct = () => {
     setAttributes(newAttributes);
   };
 
+ 
+
+
   const removeAttribute = (indexToRemove) => {
     // Implement your remove attribute logic here
     const updatedAttributes = [...attributes];
@@ -204,7 +207,7 @@ const Addproduct = () => {
   return (
     <>
       <div>
-        <div style={{ margin: "auto", textAlign: "center" }}>
+        <div style={{ margin: "auto",width:"100%", textAlign: "center" }}>
           <h4>Add Product</h4>
         </div>
 
@@ -299,7 +302,7 @@ const Addproduct = () => {
             wrapperCol={{ span: 24 }} // Span the entire width for the input
             style={{
               marginBottom: "2px",
-             
+
               fontWeight: "500",
             }}
           >
@@ -318,7 +321,7 @@ const Addproduct = () => {
             wrapperCol={{ span: 24 }} // Span the entire width for the input
             style={{
               marginBottom: "2px",
-             
+
               fontWeight: "500",
             }}
           >
@@ -339,7 +342,7 @@ const Addproduct = () => {
             wrapperCol={{ span: 24 }}
             style={{
               marginBottom: "2px",
-             
+
               fontWeight: "500",
             }}
           >
@@ -364,7 +367,6 @@ const Addproduct = () => {
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 style={{
-                 
                   fontWeight: "500",
                 }}
               >
@@ -385,7 +387,6 @@ const Addproduct = () => {
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 style={{
-                 
                   fontWeight: "500",
                 }}
               >
@@ -417,24 +418,16 @@ const Addproduct = () => {
                 wrapperCol={{ span: 24 }} // Span the entire width for the input
                 style={{
                   marginBottom: "2px",
-                 
+
                   fontWeight: "500",
                 }}
-              
-              
-              
               >
                 <Select
-
-                
                   value={discountType}
                   onChange={(value) => setDiscountType(value)}
-                  style={{border: "2px  solid black ", width:"full" ,   }}
-                
-                
-                
+                  style={{ border: "2px  solid black ", width: "full" }}
                 >
-                  <Option     value="fixed">Fixed Amount</Option>
+                  <Option value="fixed">Fixed Amount</Option>
                   <Option value="percentage">Percentage</Option>
                 </Select>
               </Form.Item>
@@ -454,23 +447,55 @@ const Addproduct = () => {
                 wrapperCol={{ span: 24 }} // Span the entire width for the input
                 style={{
                   marginBottom: "2px",
-                 
+
                   fontWeight: "500",
                 }}
               >
-                <InputNumber  placeholder="Example: 23"   style={{  padding:"3px" , margin:"0px 10px" ,width:"100%", border:"2px solid black "}}   min={0} />
+                <InputNumber
+                  placeholder="Example: 23"
+                  style={{
+                    padding: "3px",
+                    margin: "0px 10px",
+                    width: "100%",
+                    border: "2px solid black ",
+                  }}
+                  min={0}
+                />
               </Form.Item>
             </div>
           </div>
-<div  style={{ margin:"10px 0px " , border:"1px solid black",  padding:"20px 10px ", borderRadius:"10px" }}>
-  <h4  style={{margin:"10px auto ", textAlign:"center"}}>Image Upload </h4>
-          <ProductImgUpload
-            setMultipleImageLinks={setMultipleImageLinks}
-            setSingleImageLink={setSingleImageLink}
-          ></ProductImgUpload>
+          <div
+            style={{
+              margin: "10px 0px ",
+              border: "1px solid black",
+              padding: "20px 10px ",
+              borderRadius: "10px",
+            }}
+          >
+            <h4 style={{ margin: "10px auto ", textAlign: "center" }}>
+              Image Upload{" "}
+            </h4>
+            <ProductImgUpload
+              setMultipleImageLinks={setMultipleImageLinks}
+              setSingleImageLink={setSingleImageLink}
+            ></ProductImgUpload>
+          </div>
 
-</div>
 
+     
+          <div
+            style={{
+              margin: "10px 0px ",
+              border: "1px solid black",
+              padding: "20px 10px ",
+              borderRadius: "10px",
+            }}
+          >
+            <h4 style={{ margin: "10px auto ", textAlign: "center" }}>
+              Attribute & Tag
+            </h4>
+
+            
           {attributes.map((attribute, index) => (
             <Space key={index} style={{ marginBottom: 8 }}>
               <Form.Item
@@ -485,11 +510,12 @@ const Addproduct = () => {
                 wrapperCol={{ span: 24 }}
                 style={{
                   marginBottom: "2px",
-                 
+
                   fontWeight: "500",
                 }}
               >
                 <Input
+                 style={{ border: "1px solid black", color:"black"}}
                   placeholder="Attribute Label"
                   onChange={(e) => handleLabelChange(index, e.target.value)}
                   value={attribute.label}
@@ -509,17 +535,21 @@ const Addproduct = () => {
                 wrapperCol={{ span: 24 }}
                 style={{
                   marginBottom: "2px",
-                 
+
                   fontWeight: "500",
                 }}
               >
                 <Select
+                 
                   mode="tags"
                   width="100%"
                   tokenSeparators={[","]}
                   placeholder="Attribute Values"
                   onChange={(values) => handleValuesChange(index, values)}
                   value={attribute.values}
+                
+                    style={{ border: "1px solid black", color:"black"}}
+                
                 />
               </Form.Item>
 
@@ -539,7 +569,7 @@ const Addproduct = () => {
 
           {/* Add Attribute Button */}
           <Form.Item wrapperCol={{ offset: 6, span: 12 }}>
-            <Button type="dashed" onClick={addAttribute} block>
+            <Button   style={{border:"1px solid green ", fontWeight:"bold",background:"green", color:"white"}}  type="dashed" onClick={addAttribute} block>
               + Add Attribute
             </Button>
           </Form.Item>
@@ -558,7 +588,7 @@ const Addproduct = () => {
             wrapperCol={{ span: 24 }} // Span the entire width for the input
             style={{
               marginBottom: "2px",
-             
+
               fontWeight: "500",
             }}
           >
@@ -570,6 +600,10 @@ const Addproduct = () => {
               <Option value="black_friday">black_friday</Option>
             </Select>
           </Form.Item>
+
+
+          </div>
+
 
           <div
             style={{
@@ -589,7 +623,7 @@ const Addproduct = () => {
               wrapperCol={{ span: 24 }} // Span the entire width for the input
               style={{
                 marginBottom: "2px",
-               
+
                 fontWeight: "500",
               }}
             >
@@ -604,7 +638,7 @@ const Addproduct = () => {
               wrapperCol={{ span: 24 }} // Span the entire width for the input
               style={{
                 marginBottom: "2px",
-               
+
                 fontWeight: "500",
               }}
             >
@@ -612,12 +646,17 @@ const Addproduct = () => {
             </Form.Item>
           </div>
 
+          
+          
+           
+          
           {showAdditionalFields && (
             <Variyetions
+            attributes={attributes}
               setVariyationImageLink={setVariyationImageLink}
             ></Variyetions>
           )}
-
+ 
           <div style={{ margin: "auto " }}> </div>
           <Form.Item>
             <Button
