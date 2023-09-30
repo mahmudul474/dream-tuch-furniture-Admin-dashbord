@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductTable from "../components/ProductTable/ProductTable";
-import { Space, Spin } from "antd";
+import Spinner from "../components/Spinner/Spinner";
  
 const Productlist = () => {
   const [products, setProducts] = useState([]);
@@ -18,9 +18,7 @@ const Productlist = () => {
 
 
   if(isLoading){
-    return <Space    style={{display:"flex ", justifyContent:"center",  justifyItems:"center"}} size="middle"> 
-    <Spin size="large" />
-  </Space>
+    return <Spinner></Spinner>
   }
 
 

@@ -9,10 +9,12 @@ const [isLoading, setIsloading]=useState(false)
 
 
   useEffect(()=>{
+    setIsloading(true)
   fetch("https://site-api.trelyt.store/api/v1/category")
   .then(res=>res.json())
   .then(data=>{
     setCategory(data?.data)
+    setIsloading(false)
   })
 
   },[])
