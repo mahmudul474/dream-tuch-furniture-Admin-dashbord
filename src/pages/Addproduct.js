@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Input, InputNumber, Row } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -80,84 +80,7 @@ const Addproduct = () => {
     setSelectedCategory(value);
   };
 
-  const category = [
-    {
-      _id: 0,
-      title: "All-Door",
-    },
-    {
-      _id: 1,
-      title: "Sofa",
-    },
-    {
-      _id: 2,
-      title: "Center-Table",
-    },
-    {
-      _id: 3,
-      title: "Diven",
-    },
-    {
-      _id: 4,
-      title: "Tv Cabinet",
-    },
-    {
-      _id: 5,
-      title: "Open Shelves",
-    },
-    {
-      _id: 6,
-      title: "Dinning",
-    },
-    {
-      _id: 7,
-      title: "Dinning-Chair",
-    },
-    {
-      _id: 8,
-      title: "Dinner Wagon",
-    },
-    {
-      _id: 9,
-      title: "Bed",
-    },
-    {
-      _id: 10,
-      title: "Dressing Table",
-    },
-    {
-      _id: 11,
-      title: "Wardrope",
-    },
-    {
-      _id: 12,
-      title: "Mattres",
-    },
-    {
-      _id: 13,
-      title: "Chest Of Table",
-    },
-    {
-      _id: 14,
-      title: "Reading Table",
-    },
-    {
-      _id: 15,
-      title: "SmartFit",
-    },
-    {
-      _id: 16,
-      title: "Kitchen",
-    },
-    {
-      _id: 17,
-      title: "Door",
-    },
-    {
-      _id: 18,
-      title: "Executive Table",
-    },
-  ];
+  const [category,setCategory]=useState([])
 
   const onFinish = (values) => {
     // let variableProducts = [];
@@ -207,6 +130,19 @@ const Addproduct = () => {
       });
   };
 
+
+//// categoty
+
+  useEffect(()=>{
+  
+  fetch("https://site-api.trelyt.store/api/v1/category")
+  .then(res=>res.json())
+  .then(data=>{
+    setCategory(data?.data)
+     
+  })
+
+  },[])
   return (
     <>
       <div>
@@ -283,9 +219,9 @@ const Addproduct = () => {
               onChange={handleCategoryChange}
               value={selectedCategory}
             >
-              {category.map((cat) => (
-                <Option key={cat._id} value={cat.title}>
-                  {cat.title}
+              {[...category]?.reverse().map((cat) => (
+                <Option key={cat._id} value={cat.name}>
+                  {cat.name}
                 </Option>
               ))}
             </Select>

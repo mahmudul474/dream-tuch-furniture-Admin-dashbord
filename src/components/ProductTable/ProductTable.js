@@ -46,7 +46,6 @@ const columns = [
     key: 'status',
     width: 150,
   },
-   
   {
     title: 'Action',
     key: 'operation',
@@ -72,7 +71,7 @@ const ProductTable = ({data}) => (
     columns={columns}
     dataSource={data}
     scroll={{
-      x: 1500,
+      x: 800,
       y: 1000,
     }}
   />
