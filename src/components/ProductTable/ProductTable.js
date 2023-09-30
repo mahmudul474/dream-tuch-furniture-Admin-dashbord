@@ -1,6 +1,12 @@
 import { Table } from 'antd';
 const columns = [
   {
+    title: 'Img',
+    width: 100,
+    dataIndex: 'thumbnail',
+    render: (thumbnail) => <img style={{width:"50px", border:"1px solid grey " ,borderRadius:"100%" }} src={thumbnail} alt="Thumbnail" />,
+  },
+  {
     title: 'Name',
     width: 100,
     dataIndex: 'name',
@@ -29,40 +35,18 @@ const columns = [
     width: 150,
   },
   {
+    title: 'Stock',
+    dataIndex: 'stock',
+    key: 'stock',
+    width: 150,
+  },
+  {
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
     width: 150,
   },
-  {
-    title: 'Column 4',
-    dataIndex: 'address',
-    key: '4',
-    width: 150,
-  },
-  {
-    title: 'Column 5',
-    dataIndex: 'address',
-    key: '5',
-    width: 150,
-  },
-  {
-    title: 'Column 6',
-    dataIndex: 'address',
-    key: '6',
-    width: 150,
-  },
-  {
-    title: 'Column 7',
-    dataIndex: 'address',
-    key: '7',
-    width: 150,
-  },
-  {
-    title: 'Column 8',
-    dataIndex: 'address',
-    key: '8',
-  },
+   
   {
     title: 'Action',
     key: 'operation',
@@ -93,4 +77,7 @@ const ProductTable = ({data}) => (
     }}
   />
 );
+
 export default ProductTable;
+
+

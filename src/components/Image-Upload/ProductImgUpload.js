@@ -33,6 +33,7 @@ function ImageUploader({ setMultipleImageLinks, setSingleImageLink }) {
 
   const handleSingleImageUpload = async (e) => {
     const file = e.target.files[0];
+ 
     const formData = new FormData();
     formData.append("image", file);
 

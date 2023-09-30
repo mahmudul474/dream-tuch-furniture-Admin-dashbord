@@ -11,12 +11,15 @@ import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
 
 import axios from "axios";
 import Variyetions from "../components/VariyableProduct/Variyetions";
+import { useNavigate } from "react-router-dom";
 
 const Addproduct = () => {
   const [form] = Form.useForm();
   const [discountType, setDiscountType] = useState("fixed");
   const [discountValue, setDiscountValue] = useState(null);
   const [productType, setProductType] = useState("simple_product");
+  const navigate = useNavigate()
+  
   const handleChange = (value) => {
     setProductType(value);
     setShowAdditionalFields(value === "variable_product");
@@ -196,7 +199,7 @@ const Addproduct = () => {
       .post(`https://site-api.trelyt.store/api/v1/products`, product)
       .then((response) => {
         // Handle the response data here
-        console.log("Response:", response.data);
+          navigate("/admin/list-product")
       })
       .catch((error) => {
         // Handle any errors that occurred during the request
