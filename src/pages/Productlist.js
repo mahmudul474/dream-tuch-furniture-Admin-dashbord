@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ProductTable from "../components/ProductTable/ProductTable";
 import Spinner from "../components/Shared/Spinner/Spinner";
 import DeleteConfirmationModal from "../components/Shared/ConfirmationsModal/DeleteConfirmationModal";
 import { Button, Table } from "antd";
+import axios from "axios";
 
 const Productlist = () => {
   const [products, setProducts] = useState([]);
@@ -23,18 +23,21 @@ const Productlist = () => {
       });
   }, []);
 
-  if (isLoading) {
-    return <Spinner></Spinner>;
-  }
+  
 
   const handleDelete = (product) => {
     setSelectedProduct(product);
     setIsModalVisible(true);
   };
+  
 
   const handleConfirmDelete = () => {
-    // Handle product deletion logic here
-    setIsModalVisible(false);
+    // Make an API call to delete the selected product by ID
+    axios.delete(`https://site-api.trelyt.store/api/v1/api/products/${selectedProduct._id}`).then((response) => {
+      // Update the state to remove the deleted product
+      setProducts(products.filter((product) => product._id !== selectedProduct._id));
+      setIsModalVisible(false);
+    });
   };
 
   const handleCancelDelete = () => {
@@ -101,26 +104,43 @@ const Productlist = () => {
       width: 150,
     },
     {
-      title: 'Actions',
+      title: 'Edit',
       key: 'actions',
       render: (_, record) => (
-        <Button type="danger" onClick={() => handleDelete(record)}>
+        <Button style={{background:"green", color:"white"}} type="danger" onClick={() => handleDelete(record)}>
+          Edit
+        </Button>
+      ),
+    },
+    {
+      title: 'Delete',
+      key: 'actions',
+      render: (_, record) => (
+        <Button style={{background:"red", color:"white"}} type="danger" onClick={() => handleDelete(record)}>
           Delete
         </Button>
       ),
     },
   ];
+
+
+
+  if (isLoading) {
+    return <Spinner></Spinner>;
+  }
   return (
     <div>
       <h3 className="mb-4 title">Products</h3>
       <Table dataSource={products} columns={columns} />
       <div>
-        <DeleteConfirmationModal
-          isVisible={isModalVisible}
-          entity="Product"
-          onCancel={handleCancelDelete}
-          onConfirm={handleConfirmDelete}
-        />
+      <DeleteConfirmationModal
+  isVisible={isModalVisible}
+  entity="Product"
+  imageUrl={selectedProduct ? selectedProduct.thumbnail : ''} // Adjust the prop name as needed
+  title={selectedProduct ? selectedProduct.name : ''} // Adjust the prop name as needed
+  onCancel={handleCancelDelete}
+  onConfirm={handleConfirmDelete}
+/>
       </div>
     </div>
   );
