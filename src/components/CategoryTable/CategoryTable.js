@@ -31,7 +31,7 @@ const columns = [
 
 
 const data = [];
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 30; i++) {
   data.push({
     key: i,
     name: ` ${"hello "}`,

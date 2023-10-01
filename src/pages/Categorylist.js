@@ -7,7 +7,7 @@ const [categorys,setCategory]=useState([])
 const [isLoading, setIsloading]=useState(false)
 
 
-
+ //get category
   useEffect(()=>{
     setIsloading(true)
   fetch("https://site-api.trelyt.store/api/v1/category")
@@ -18,6 +18,19 @@ const [isLoading, setIsloading]=useState(false)
   })
 
   },[])
+
+
+///delete category
+ const     handleCategoryDelete=()=>{
+  
+ }
+
+
+
+
+//edit category
+
+
 
 
 
