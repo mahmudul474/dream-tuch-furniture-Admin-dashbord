@@ -1,14 +1,15 @@
 import { Button, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import CategoryTable from "../components/CategoryTable/CategoryTable";
 import Spinner from "../components/Shared/Spinner/Spinner";
-
+import axios from "axios";
+import DeleteConfirmationModal from "../components/Shared/ConfirmationsModal/DeleteConfirmationModal";
+import EditCategoryModal from "../components/EditCategoryModal/EditCategoryModal";
 export default function Categorylist() {
   const [categorys, setCategory] = useState([]);
   const [isLoading, setIsloading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   //get category
   useEffect(() => {
     setIsloading(true);
@@ -20,20 +21,75 @@ export default function Categorylist() {
       });
   }, []);
 
+  const handleDelete = (product) => {
+    setSelectedCategory(product);
+    setIsModalVisible(true);
+  };
+
+  const handleConfirmDelete = () => {
+    // Make an API call to delete the selected product by ID
+    axios
+      .delete(
+        `https://site-api.trelyt.store/api/v1/api/category/${selectedCategory._id}`
+      )
+      .then((response) => {
+        // Update the state to remove the deleted product
+        setCategory(
+          categorys.filter((product) => product._id !== selectedCategory._id)
+        );
+        setIsModalVisible(false);
+      });
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedCategory(null);
+    setIsModalVisible(false);
+  };
+
+
+  const handleEdit = (category) => {
+    setSelectedCategory(category);
+    setIsEditModalVisible(true);
+  };
+
+  const handleUpdateCategory = (editedCategory, categoryId) => {
+    // Make an API call to update the category
+    axios
+      .put(`/api/categories/${categoryId}`, editedCategory)
+      .then((response) => {
+        // Handle the updated category data if needed
+        console.log('Category updated:', response.data);
+        setIsEditModalVisible(false);
+        // You can also refresh the category list if needed
+        // Call a function to fetch the updated category list here
+      })
+      .catch((error) => {
+        console.error('Error updating category:', error);
+        setIsEditModalVisible(false);
+      });
+  };
+
+  const handleCancelEdit = () => {
+    setSelectedCategory(null);
+    setIsEditModalVisible(false);
+  };
+
+
   const columns = [
     {
       title: "Img",
       width: 100,
-      dataIndex: "thumbnail",
-      render: (thumbnail) => (
+      dataIndex: "icon",
+      render: (icon) => (
         <img
           style={{
-            width: "50px",
+            width: "30px",
+            height: "30px",
             border: "1px solid grey ",
             borderRadius: "100%",
           }}
-          src={thumbnail}
-          alt="Thumbnail"
+          src={icon}
+          alt="icon"
         />
       ),
     },
@@ -43,37 +99,45 @@ export default function Categorylist() {
       dataIndex: "name",
       key: "name",
     },
-
     {
-      title: "Category",
-      dataIndex: "category",
-      key: "category",
+      title: "slug",
+      dataIndex: "slug",
+      key: "slug",
       width: 150,
     },
-    
-     
+
     {
-      title: 'Edit',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (_, record) => (
-        <Button style={{background:"green", color:"white"}} type="danger" onClick={() => handleDelete(record)}>
+        <div style={{display:"flex", justifyContent:"space-between", justifyItems:"center"}}>
+        <Button  style={{margin:"0px 5px"}} type="primary" onClick={() => handleEdit(record)}>
+        Edit
+      </Button>
+        <Button
+          style={{ background: "green", color: "white" }}
+          type="danger"
+          onClick={() => handleDelete(record)}
+        >
           Edit
         </Button>
+        </div>
       ),
     },
     {
-      title: 'Delete',
-      key: 'actions',
+      title: "Delete",
+      key: "actions",
       render: (_, record) => (
-        <Button style={{background:"red", color:"white"}} type="danger" onClick={() => handleDelete(record)}>
+        <Button
+          style={{ background: "red", color: "white" }}
+          type="danger"
+          onClick={() => handleDelete(record)}
+        >
           Delete
         </Button>
       ),
     },
   ];
-
-
-
 
   if (isLoading) {
     return <Spinner></Spinner>;
@@ -83,76 +147,22 @@ export default function Categorylist() {
     <div>
       <h2>Product Category</h2>
       <Table dataSource={categorys} columns={columns} />
-    
+      <div>
+        <DeleteConfirmationModal
+          isVisible={isModalVisible}
+          entity="Category"
+          imageUrl={selectedCategory ? selectedCategory.icon : ""} // Adjust the prop name as needed
+          title={selectedCategory ? selectedCategory.name : ""} // Adjust the prop name as needed
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+         <EditCategoryModal
+        isVisible={isEditModalVisible}
+        category={selectedCategory}
+        onCancel={handleCancelEdit}
+        onEdit={handleUpdateCategory}
+      />
+      </div>
     </div>
   );
 }
-
-// import React, { useEffect, useState } from "react";
-// import Spinner from "../components/Shared/Spinner/Spinner";
-// import DeleteConfirmationModal from "../components/Shared/ConfirmationsModal/DeleteConfirmationModal";
-// import { Button, Table } from "antd";
-// import axios from "axios";
-
-// const Productlist = () => {
-//   const [products, setProducts] = useState([]);
-//   const [isLoading, setIsloading] = useState(false);
-//   const [selectedProduct, setSelectedProduct] = useState(null);
-//   const [isModalVisible, setIsModalVisible] = useState(false);
-
-//   useEffect(() => {
-//     setIsloading(true);
-//     fetch(`https://site-api.trelyt.store/api/v1/products`)
-//       .then((response) => response.json())
-//       .then((products) => {
-//         setProducts(products.data.data);
-//         setIsloading(false);
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching products:", error);
-//       });
-//   }, []);
-
-//   if (isLoading) {
-//     return <Spinner></Spinner>;
-//   }
-
-//   const handleDelete = (product) => {
-//     setSelectedProduct(product);
-//     setIsModalVisible(true);
-//   };
-
-//   const handleConfirmDelete = () => {
-//     // Make an API call to delete the selected product by ID
-//     axios.delete(`https://site-api.trelyt.store/api/v1/api/products/${selectedProduct._id}`).then((response) => {
-//       // Update the state to remove the deleted product
-//       setProducts(products.filter((product) => product._id !== selectedProduct._id));
-//       setIsModalVisible(false);
-//     });
-//   };
-
-//   const handleCancelDelete = () => {
-//     setSelectedProduct(null);
-//     setIsModalVisible(false);
-//   };
-
-
-//   return (
-//     <div>
-//       <h3 className="mb-4 title">Products</h3>
-      
-//       <div>
-//       <DeleteConfirmationModal
-//   isVisible={isModalVisible}
-//   entity="Product"
-//   imageUrl={selectedProduct ? selectedProduct.thumbnail : ''} // Adjust the prop name as needed
-//   title={selectedProduct ? selectedProduct.name : ''} // Adjust the prop name as needed
-//   onCancel={handleCancelDelete}
-//   onConfirm={handleConfirmDelete}
-// />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Productlist;
