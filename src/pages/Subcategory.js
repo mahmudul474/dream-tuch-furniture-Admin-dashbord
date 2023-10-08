@@ -1,14 +1,18 @@
 import { React, useEffect, useState } from "react";
-
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { Select } from 'antd';
+const { Option } = Select;
 
-const Addcat = () => {
+const Subcategory = () => {
   const [categoryname, setCategoryname] = useState("");
   const [icon, setIcon] = useState("");
   const [slug, setSlug] = useState("");
-  const navigate = useNavigate();
+  const [category, setCategory] = useState([])
+  const [parentId, setParentId] = useState("")
+
+  const navigate = useNavigate()
   ///slug  img  upload
   const handleIconImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -16,7 +20,7 @@ const Addcat = () => {
     formData.append("image", file);
     try {
       const response = await fetch(
-        "https://api.imgbb.com/1/upload&key=70fb97e516483d52ddf8b1cd4d5d1698",
+        `${process.env.imggBB_URL}`,
         {
           method: "POST",
           body: formData,
@@ -34,13 +38,47 @@ const Addcat = () => {
     }
   };
 
+  //fetch all parent category
+  useEffect(() => {
+
+    fetch("https://site-api.trelyt.store/api/v1/category")
+      .then((res) => res.json())
+      .then((data) => {
+        setCategory(data?.data);
+
+      });
+  }, []);
+
+
+  const handleCategoryChange = (value) => {
+    // Find the selected item based on the value (name)
+    const selectedCategory = category.find((item) => item.name === value);
+
+    // Set the selected item's ID in the state
+    if (selectedCategory) {
+      setParentId(selectedCategory._id);
+    } else {
+      // Handle the case where the selected item is not found
+      setCategory(null);
+    }
+  };
+
+
+
+
+
+
+
+
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     const category = {
-      name: categoryname,
-      slug: slug,
-      icon: icon,
-    };
+      categoryname,
+      slug,
+      icon,
+      parentId
+    }
+
     fetch("https://site-api.trelyt.store/api/v1/category", {
       method: "POST",
       headers: {
@@ -52,14 +90,19 @@ const Addcat = () => {
       .then((data) => {
         if (data.success === true) {
           toast.success(data.message);
-          navigate("/admin/list-category");
+          navigate("/admin/list-category")
         }
       });
-  };
+
+
+  }
+
+
+
 
   return (
     <div>
-      <h3 className="mb-4  title">Category</h3>
+      <h3 className="mb-4  title">Sub Category</h3>
       <div>
         <form action="" onSubmit={handleSubmit}>
           <div style={{ marginBottom: "15px" }}>
@@ -126,6 +169,19 @@ const Addcat = () => {
               style={{ width: "100%", padding: "15px" }}
             />
           </div>
+          <Select
+            style={{ width: '100%', border: "1px solid black", color: "black", }}
+            placeholder="Select  Parent  category"
+            dropdownStyle={{ padding: '8px' }}
+            onChange={handleCategoryChange}
+          >
+            {category.map((item) => (
+              <Option key={item._id} value={item.name}>
+                {item.name}
+              </Option>
+            ))}
+          </Select>
+
 
           <button
             className="btn btn-success border-0 rounded-3 my-5"
@@ -139,4 +195,4 @@ const Addcat = () => {
   );
 };
 
-export default Addcat;
+export default Subcategory

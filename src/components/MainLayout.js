@@ -86,6 +86,11 @@ const MainLayout = () => {
                   label: "Category",
                 },
                 {
+                  key: "Subcategory",
+                  icon: <BiCategoryAlt className="fs-4" />,
+                  label: "Subcategory",
+                },
+                {
                   key: "list-category",
                   icon: <BiCategoryAlt className="fs-4" />,
                   label: "Category List",
