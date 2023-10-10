@@ -2,53 +2,43 @@ import { React, useEffect, useState } from "react";
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { Select } from 'antd';
+import { Select } from "antd";
+import useS3 from "../hooks/useS3";
 const { Option } = Select;
 
 const Subcategory = () => {
   const [categoryname, setCategoryname] = useState("");
   const [icon, setIcon] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState([])
-  const [parentId, setParentId] = useState("")
+  const [category, setCategory] = useState([]);
+  const [parentId, setParentId] = useState("");
+  const { uploadToS3 } = useS3();
+  const navigate = useNavigate();
+  const [singleFile, setSingleFile] = useState(null);
 
-  const navigate = useNavigate()
-  ///slug  img  upload
-  const handleIconImageUpload = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-      const response = await fetch(
-        `${process.env.imggBB_URL}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  const handleSingleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSingleFile(selectedFile);
 
-      if (response.ok) {
-        const data = await response.json();
-        setIcon(data.data.url);
-      } else {
-        console.error("Failed to upload image");
+    // Use the uploadToS3 function to upload the single selected file immediately
+    if (selectedFile) {
+      const key = `path/to/single/${selectedFile.name}`;
+      const url = await uploadToS3(selectedFile, key);
+
+      if (url) {
+        setIcon(url);
       }
-    } catch (error) {
-      console.error("Error uploading image", error);
     }
   };
 
   //fetch all parent category
   useEffect(() => {
-
     fetch("https://site-api.trelyt.store/api/v1/category")
       .then((res) => res.json())
       .then((data) => {
         setCategory(data?.data);
-
       });
   }, []);
-
 
   const handleCategoryChange = (value) => {
     // Find the selected item based on the value (name)
@@ -63,21 +53,16 @@ const Subcategory = () => {
     }
   };
 
-
-
-
-
-
-
-
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const category = {
-      categoryname,
+      name:categoryname,
       slug,
       icon,
-      parentId
-    }
+      parentId,
+    };
+    console.log(category,"catefory")
+
 
     fetch("https://site-api.trelyt.store/api/v1/category", {
       method: "POST",
@@ -90,15 +75,10 @@ const Subcategory = () => {
       .then((data) => {
         if (data.success === true) {
           toast.success(data.message);
-          navigate("/admin/list-category")
+          navigate("/admin/list-category");
         }
       });
-
-
-  }
-
-
-
+  };
 
   return (
     <div>
@@ -136,10 +116,20 @@ const Subcategory = () => {
                 fontFamily: "bold",
               }}
             >
-              Icon link
+              Icon
             </label>
+
+            {icon && (
+              <div>
+                <img
+                  style={{ width: "50px", height: "50px" }}
+                  src={icon}
+                  alt="Uploaded"
+                />
+              </div>
+            )}
             <Input
-              onChange={handleIconImageUpload}
+              onChange={handleSingleFileChange}
               type="file"
               label="Enter Category icon"
               id="icon"
@@ -170,9 +160,11 @@ const Subcategory = () => {
             />
           </div>
           <Select
-            style={{ width: '100%', border: "1px solid black", color: "black", }}
+
+          size={"large"}
+            style={{ width: "100%", border: "1px solid black", color: "black" }}
             placeholder="Select  Parent  category"
-            dropdownStyle={{ padding: '8px' }}
+            dropdownStyle={{ padding: "8px" }}
             onChange={handleCategoryChange}
           >
             {category.map((item) => (
@@ -181,7 +173,6 @@ const Subcategory = () => {
               </Option>
             ))}
           </Select>
-
 
           <button
             className="btn btn-success border-0 rounded-3 my-5"
@@ -195,4 +186,4 @@ const Subcategory = () => {
   );
 };
 
-export default Subcategory
+export default Subcategory;

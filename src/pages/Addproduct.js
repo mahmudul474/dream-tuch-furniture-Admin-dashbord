@@ -5,13 +5,11 @@ import "react-quill/dist/quill.snow.css";
 import { Select, Space } from "antd";
 import "./Addproduct.css";
 import { CloseOutlined } from "@ant-design/icons";
-
 import { Option } from "antd/es/mentions";
-import ProductImgUpload from "../components/Image-Upload/ProductImgUpload";
-
 import axios from "axios";
 import Variyetions from "../components/VariyableProduct/Variyetions";
 import { useNavigate } from "react-router-dom";
+import useS3 from "../hooks/useS3";
 
 const Addproduct = () => {
   const [form] = Form.useForm();
@@ -46,14 +44,52 @@ const Addproduct = () => {
   const [singleImageLink, setSingleImageLink] = useState(null);
   const [variyationImageLink, setVariyationImageLink] = useState(null);
 
+
+    console.log(singleImageLink,multipleImageLinks)
+
+  const { uploadToS3, uploadMultipleToS3 } = useS3();
+  const [selectedSingleFile, setSelectedSingleFile] = useState(null);
+  const [selectedMultipleFiles, setSelectedMultipleFiles] = useState([]);
+ 
+
+  const handleThumnilFileChange = async (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      setSelectedSingleFile(file);
+      const key = `path/to/${file.name}`;
+      const url = await uploadToS3(file, key);
+
+      if (url) {
+        setSingleImageLink(url);
+      }
+    }
+  };
+
+  const handleMultipleImagesChange = async (event) => {
+    const files = event.target.files;
+
+    if (files.length > 0) {
+      setSelectedMultipleFiles([...files]);
+      const urls = await uploadMultipleToS3(files);
+
+      if (urls.length > 0) {
+       setMultipleImageLinks(urls);
+      }
+    }
+  };
+
+
+
+
+
+
+
   const [attributes, setAttributes] = useState([{ label: "", values: [] }]);
   const addAttribute = () => {
     const newAttributes = [...attributes, { label: "", values: [] }];
     setAttributes(newAttributes);
   };
-
- 
-
 
   const removeAttribute = (indexToRemove) => {
     // Implement your remove attribute logic here
@@ -83,17 +119,7 @@ const Addproduct = () => {
   const [category,setCategory]=useState([])
 
   const onFinish = (values) => {
-    // let variableProducts = [];
-    // const variyetionfo = values?.variyations.map((variyable) => {
-    //   const product = {
-    //     price: variyable.price,
-    //     stock: variyable.stock,
-    //     attributes: variyable.attributes,
-    //     image: variyationImageLink,
-    //   };
-    //   variableProducts.push(product);
-    // });
-
+    
     const product = {
       name: values?.name,
       category: selectedCategory,
@@ -414,10 +440,59 @@ const Addproduct = () => {
             <h4 style={{ margin: "10px auto ", textAlign: "center" }}>
               Image Upload{" "}
             </h4>
-            <ProductImgUpload
-              setMultipleImageLinks={setMultipleImageLinks}
-              setSingleImageLink={setSingleImageLink}
-            ></ProductImgUpload>
+            
+
+
+    
+    
+            <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item
+          name="Thumnils "
+          label="Upload  Thumnil"
+          rules={[
+            {
+              required: true,
+              message: "Please Upload Thumnil",
+            },
+          ]}
+          labelCol={{ span: 24 }} // Span the entire width for the label
+          wrapperCol={{ span: 24 }} // Span the entire width for the input
+          style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
+        >
+          <input type="file" onChange={handleThumnilFileChange} />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item
+          name="images"
+          label="Images"
+          rules={[
+            {
+              required: true,
+              message: "Please  upload images ",
+            },
+          ]}
+          labelCol={{ span: 24 }} // Span the entire width for the label
+          wrapperCol={{ span: 24 }} // Span the entire width for the input
+          style={{ marginBottom: "2px", fontSize: "20px", fontWeight: "bold" }}
+        >
+          <input
+            className="bg-red-400"
+            type="file"
+            multiple
+            onChange={handleMultipleImagesChange}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
+  
+
+
+
+
+
+
           </div>
 
 
@@ -507,7 +582,7 @@ const Addproduct = () => {
           ))}
 
           {/* Add Attribute Button */}
-          <Form.Item wrapperCol={{ offset: 6, span: 12 }}>
+          <Form.Item   >
             <Button   style={{border:"1px solid green ", fontWeight:"bold",background:"green", color:"white"}}  type="dashed" onClick={addAttribute} block>
               + Add Attribute
             </Button>

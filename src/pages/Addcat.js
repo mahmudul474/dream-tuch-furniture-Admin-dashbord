@@ -3,34 +3,29 @@ import { React, useEffect, useState } from "react";
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useS3 from "../hooks/useS3";
 
 const Addcat = () => {
+  const { uploadToS3 } = useS3();
+
   const [categoryname, setCategoryname] = useState("");
   const [icon, setIcon] = useState("");
   const [slug, setSlug] = useState("");
   const navigate = useNavigate();
-  ///slug  img  upload
-  const handleIconImageUpload = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-      const response = await fetch(
-        "https://api.imgbb.com/1/upload&key=70fb97e516483d52ddf8b1cd4d5d1698",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  const [singleFile, setSingleFile] = useState(null);
 
-      if (response.ok) {
-        const data = await response.json();
-        setIcon(data.data.url);
-      } else {
-        console.error("Failed to upload image");
+  const handleSingleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSingleFile(selectedFile);
+
+    // Use the uploadToS3 function to upload the single selected file immediately
+    if (selectedFile) {
+      const key = `path/to/single/${selectedFile.name}`;
+      const url = await uploadToS3(selectedFile, key);
+
+      if (url) {
+        setIcon(url);
       }
-    } catch (error) {
-      console.error("Error uploading image", error);
     }
   };
 
@@ -93,10 +88,20 @@ const Addcat = () => {
                 fontFamily: "bold",
               }}
             >
-              Icon link
+              Icon
             </label>
+
+            {icon && (
+              <div>
+                <img
+                  style={{ width: "50px", height: "50px" }}
+                  src={icon}
+                  alt="Uploaded"
+                />
+              </div>
+            )}
             <Input
-              onChange={handleIconImageUpload}
+              onChange={handleSingleFileChange}
               type="file"
               label="Enter Category icon"
               id="icon"
