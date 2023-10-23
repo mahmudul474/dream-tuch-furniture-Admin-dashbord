@@ -12,3 +12,12 @@
   color: black;
   font-weight: 500;
 }
+
+
+.sub-category {
+  display: none;
+}
+
+.Option:hover .sub-category {
+  display: block;
+}

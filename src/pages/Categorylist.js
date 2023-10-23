@@ -15,8 +15,8 @@ export default function Categorylist() {
     setIsloading(true);
     fetch("https://site-api.trelyt.store/api/v1/category")
       .then((res) => res.json())
-      .then((data) => {
-        setCategory(data?.data);
+      .then(data => {
+        setCategory(data?.data.categories);
         setIsloading(false);
       });
   }, []);
@@ -30,7 +30,7 @@ export default function Categorylist() {
     // Make an API call to delete the selected product by ID
     axios
       .delete(
-        `https://site-api.trelyt.store/api/v1/api/category/${selectedCategory._id}`
+        `https://site-api.trelyt.store/api/v1/category/${selectedCategory._id}`
       )
       .then((response) => {
         // Update the state to remove the deleted product
@@ -107,13 +107,11 @@ export default function Categorylist() {
     },
 
     {
-      title: "Actions",
+      title: "Edit",
       key: "actions",
       render: (_, record) => (
         <div style={{display:"flex", justifyContent:"space-between", justifyItems:"center"}}>
-        <Button  style={{margin:"0px 5px"}} type="primary" onClick={() => handleEdit(record)}>
-        Edit
-      </Button>
+         
         <Button
           style={{ background: "green", color: "white" }}
           type="danger"

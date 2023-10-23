@@ -31,14 +31,56 @@ const Subcategory = () => {
     }
   };
 
-  //fetch all parent category
+
+  const [inputValue, setInputValue] = useState("");
+  const [tags, setTags] = useState([]);
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+
+      if (inputValue.trim() !== "") {
+        setTags([...tags, inputValue.trim()]);
+        setInputValue("");
+      }
+    }
+  };
+
+  const removeTag = (tag) => {
+    const updatedTags = tags.filter((t) => t !== tag);
+    setTags(updatedTags);
+  };
+
+
+
   useEffect(() => {
-    fetch("https://site-api.trelyt.store/api/v1/category")
-      .then((res) => res.json())
-      .then((data) => {
-        setCategory(data?.data);
-      });
+    async function fetchData() {
+      try {
+        const response = await fetch("https://site-api.trelyt.store/api/v1/category?grouped=true");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+         setCategory(data?.data?.categories)
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+
+    fetchData();
   }, []);
+  
+
+
+ console.log(category)
+
+
 
   const handleCategoryChange = (value) => {
     // Find the selected item based on the value (name)
@@ -59,6 +101,7 @@ const Subcategory = () => {
       name:categoryname,
       slug,
       icon,
+      tags:tags,
       parentId,
     };
     console.log(category,"catefory")
@@ -167,12 +210,36 @@ const Subcategory = () => {
             dropdownStyle={{ padding: "8px" }}
             onChange={handleCategoryChange}
           >
-            {category.map((item) => (
+            {category  && category?.map((item) => (
               <Option key={item._id} value={item.name}>
                 {item.name}
               </Option>
             ))}
           </Select>
+
+
+
+
+          <div  style={{marginTop:"10px"}}>
+  <div className="tag-input ">
+    {tags.map((tag, index) => (
+      <div key={index} className="tag">
+        {tag}
+        <span className="remove" onClick={() => removeTag(tag)}>
+          &times;
+        </span>
+      </div>
+    ))}
+    <input
+      type="text"
+      value={inputValue}
+      onChange={handleInputChange}
+      onKeyDown={handleInputKeyDown}
+      placeholder="Enter tags"
+    />
+  </div>
+</div>
+
 
           <button
             className="btn btn-success border-0 rounded-3 my-5"

@@ -32,7 +32,7 @@ const Productlist = () => {
   const handleConfirmDelete = () => {
    axios
       .delete(
-        `https://site-api.trelyt.store/api/v1/api/products/${selectedProduct._id}`
+        `https://site-api.trelyt.store/api/v1/products/${selectedProduct._id}`
       )
       .then((response) => {
         // Update the state to remove the deleted product

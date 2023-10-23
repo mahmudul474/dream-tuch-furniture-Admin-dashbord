@@ -1,9 +1,10 @@
-import { React, useEffect, useState } from "react";
+import { React,   useState } from "react";
 
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useS3 from "../hooks/useS3";
+import "./Addcat.css";
 
 const Addcat = () => {
   const { uploadToS3 } = useS3();
@@ -28,6 +29,28 @@ const Addcat = () => {
       }
     }
   };
+  const [inputValue, setInputValue] = useState("");
+  const [tags, setTags] = useState([]);
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+
+      if (inputValue.trim() !== "") {
+        setTags([...tags, inputValue.trim()]);
+        setInputValue("");
+      }
+    }
+  };
+
+  const removeTag = (tag) => {
+    const updatedTags = tags.filter((t) => t !== tag);
+    setTags(updatedTags);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,6 +58,7 @@ const Addcat = () => {
       name: categoryname,
       slug: slug,
       icon: icon,
+      tags: tags,
     };
     fetch("https://site-api.trelyt.store/api/v1/category", {
       method: "POST",
@@ -130,6 +154,26 @@ const Addcat = () => {
               placeholder=" Example: service "
               style={{ width: "100%", padding: "15px" }}
             />
+          </div>
+
+          <div>
+            <div className="tag-input">
+              {tags.map((tag, index) => (
+                <div key={index} className="tag">
+                  {tag}
+                  <span className="remove" onClick={() => removeTag(tag)}>
+                    &times;
+                  </span>
+                </div>
+              ))}
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleInputKeyDown}
+                placeholder="Enter tags"
+              />
+            </div>
           </div>
 
           <button

@@ -1,34 +1,29 @@
 import React, { useState } from "react";
 import { Form, Input, Button, InputNumber, Row, Col, Select } from "antd";
 import { Option } from "antd/es/mentions";
+import useS3 from "../../hooks/useS3";
 
 const Variyetions = ({ setVariyationImageLink, attributes }) => {
   
 
-  const handleSingleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
+  const { uploadToS3 } = useS3();
+  const [selectedSingleFile, setSelectedSingleFile] = useState(null);
+  const [singleImg,setSingelImg]=useState("")
 
-    try {
-      const response = await fetch(
-        `${process.env.imggBB_URL}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  const handleThumnilFileChange = async (event) => {
+    const file = event.target.files[0];
 
-      if (response.ok) {
-        const data = await response.json();
-        setVariyationImageLink(data.data.url);
-      } else {
-        console.error("Failed to upload image");
+    if (file) {
+      setSelectedSingleFile(file);
+      const key = `path/to/${file.name}`;
+      const url = await uploadToS3(file, key);
+
+      if (url) {
+        setSingelImg(url);
       }
-    } catch (error) {
-      console.error("Error uploading image", error);
     }
   };
+
   const [selectedValue, setSelectedValue] = useState('');
 
   // Function to handle the change event
@@ -57,7 +52,7 @@ const Variyetions = ({ setVariyationImageLink, attributes }) => {
           name="variyations"
           initialValue={[
             {
-              image: "", // Initialize with default values if needed
+              image: singleImg, // Initialize with default values if needed
               price: "",
               stock: "",
               attributes: [
@@ -81,6 +76,7 @@ const Variyetions = ({ setVariyationImageLink, attributes }) => {
                       <Form.Item
                         name={[name, "image"]}
                         label="Upload Image"
+                        values={singleImg}
                         rules={[
                           {
                             required: true,
@@ -95,7 +91,7 @@ const Variyetions = ({ setVariyationImageLink, attributes }) => {
                           fontWeight: "500",
                         }}
                       >
-                        <input type="file" onChange={handleSingleImageUpload} />
+                        <input type="file" onChange={handleThumnilFileChange} />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -258,7 +254,7 @@ const Variyetions = ({ setVariyationImageLink, attributes }) => {
               <Form.Item>
                 <Button
                   style={{
-                    background: "red",
+                    background: "green",
                     color: "white",
                     border: "1px solid red",
                     marginTop: "5px",
