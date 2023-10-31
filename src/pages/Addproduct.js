@@ -90,7 +90,7 @@ const Addproduct = () => {
     updatedAttributes[index].values = values;
     setAttributes(updatedAttributes);
   };
-  const [selectedCategory, setSelectedCategory] = useState("All-Door"); // Initialize with an empty string or any default value
+  const [selectedCategory, setSelectedCategory] = useState(" "); // Initialize with an empty string or any default value
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
@@ -119,26 +119,26 @@ const Addproduct = () => {
         productType === "variable_product" ? values?.variyations : [],
     };
 
-    if (values.discountType && values.discountType) {
+    if (values.discountType && values.DiscountAmount) {
       product.discount = {
         type: values.discountType,
-        value: values.discountType,
+        value: values.DiscountAmount,
       };
     }
 
-    console.log(product, "this is product ");
+   
 
-    // axios.post(`https://site-api.trelyt.store/api/v1/products`, product)
-    //   .then((response) => {
-    //     // Handle the response data here
+    axios.post(`https://site-api.trelyt.store/api/v1/products`, product)
+      .then((response) => {
+        // Handle the response data here
 
-    //     console.log(response)
-    //     navigate("/admin/list-product");
-    //   })
-    //   .catch((error) => {
-    //     // Handle any errors that occurred during the request
-    //     console.error("Error:", error);
-    //   });
+        console.log(response)
+        navigate("/admin/list-product");
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error("Error:", error);
+      });
   };
 
   //// categoty
@@ -166,7 +166,6 @@ const Addproduct = () => {
               style={{ width: "100%" }}
               onChange={handleChange}
             >
-              <Select.Option value="">Select Here</Select.Option>
               <Select.Option value="simple_product">
                 Simple Product
               </Select.Option>
