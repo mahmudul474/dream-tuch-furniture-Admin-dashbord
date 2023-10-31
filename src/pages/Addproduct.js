@@ -127,6 +127,9 @@ const Addproduct = () => {
     }
 
    
+//check upd code 
+
+
 
     axios.post(`https://site-api.trelyt.store/api/v1/products`, product)
       .then((response) => {
